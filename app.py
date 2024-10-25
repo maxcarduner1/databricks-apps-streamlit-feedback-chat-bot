@@ -40,7 +40,7 @@ def handle_feedback(**response_dict):
                 databricks_host = os.getenv("FULL_DATABRICKS_HOST")
                 warehouse_id = os.getenv("DATABRICKS_WAREHOUSE_ID_VALUE")
                 table_name = os.getenv("CHAT_LOG_TABLE")
-                sql_statement = f"""INSERT INTO {table_name} VALUES ("{current_timestamp}", "{prompt}", "{assistant_response}", "{feedback['text']}")"""
+                sql_statement = f"""INSERT INTO {table_name} VALUES ("{current_timestamp}", "{prompt.replace('"', "'")}", "{assistant_response.replace('"', "'")}", "{feedback['text'].replace('"', "'")}")"""
                 dbsql.execute_sql_statement(databricks_host=databricks_host, databricks_token=pat, warehouse_id=warehouse_id, sql_statement=sql_statement)
                 st.toast("✔️ Feedback received!")
             else:
@@ -66,7 +66,7 @@ if "visibility" not in st.session_state:
     st.session_state.disabled = False
 
 st.title("🧱 Chatbot App")
-st.write(f"A basic chatbot using the your own serving endpoint")
+st.write(f"A basic chatbot using the your own serving endpoint and allows users to log feedback on assistant responses.")
 
 # Initialize chat history
 if "messages" not in st.session_state:
