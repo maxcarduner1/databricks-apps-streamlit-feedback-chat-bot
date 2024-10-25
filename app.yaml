@@ -1,0 +1,21 @@
+command: [
+  "streamlit", 
+  "run",
+  "app.py"
+]
+
+env:
+  - name: STREAMLIT_BROWSER_GATHER_USAGE_STATS
+    value: "false"
+  - name: "SERVING_ENDPOINT"
+    valueFrom: "serving_endpoint"
+  - name: "DATABRICKS_WAREHOUSE_ID_VALUE"
+    valueFrom: "databricks-warehouse-id"
+  - name: DATABRICKS_TOKEN_VALUE
+    valueFrom: "personal-access-token"
+  - name: FULL_DATABRICKS_HOST
+    valueFrom: "full-databricks-host"
+  - name: CHAT_LOG_TABLE
+    value: "maxf_demos.default.feedback_log"
+  - name: LOG_METHOD
+    value: dbsql

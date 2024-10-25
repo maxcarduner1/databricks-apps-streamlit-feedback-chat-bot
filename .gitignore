@@ -1,0 +1,9 @@
+# created by virtualenv automatically
+/bin
+/lib
+pyvenv.cfg
+/share
+/etc
+.env
+*__pycache__*
+.databricks
