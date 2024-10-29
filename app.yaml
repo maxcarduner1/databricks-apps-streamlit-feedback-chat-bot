@@ -19,3 +19,7 @@ env:
     value: "maxf_demos.default.feedback_log"
   - name: LOG_METHOD
     value: dbsql
+  # - name: SUPABASE_URL
+  # - valueFrom: supabase-url
+  # - name: SUPABASE_KEY
+  # - valueFrom: supabase-key

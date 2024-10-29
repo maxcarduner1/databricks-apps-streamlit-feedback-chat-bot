@@ -53,7 +53,7 @@ def handle_feedback(**response_dict):
                     'feedback': feedback,
                     'timestamp': 'now()'
                 }
-                supabase.table('chat_logs').insert(chat_data).execute()
+                supabase.table(os.getenv("CHAT_LOG_TABLE")).insert(chat_data).execute()
                 st.toast("✔️ Feedback received!")
         except Exception as e:
             st.toast(f"X Feedback not received, error with feedback mechanism {e}!")
