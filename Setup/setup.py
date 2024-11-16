@@ -2,8 +2,8 @@
 secret_scope_name = "review_app_demo"
 catalog = 'users'
 schema =  'max_carduner'
-entity_name = f'{catalog}.{schema}.review_app_no_rag'
-entity_version = 8
+entity_name = f'{catalog}.{schema}.brand_tone_bot'
+entity_version = 1
 
 # COMMAND ----------
 
