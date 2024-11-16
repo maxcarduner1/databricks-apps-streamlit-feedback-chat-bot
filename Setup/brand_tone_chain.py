@@ -1,5 +1,6 @@
 # Databricks notebook source
-# MAGIC %pip install langchain-core==0.2.5 langchain-community==0.2.4
+# DBR 14.3 LTS ML
+%pip install langchain-core==0.2.5 langchain-community==0.2.4
 
 # COMMAND ----------
 
@@ -116,22 +117,6 @@ model_config = mlflow.models.ModelConfig(development_config='chain_config.yaml')
 # MAGIC                 formatted_chat_history.append(AIMessage(content=chat_message["content"]))
 # MAGIC     return formatted_chat_history
 # MAGIC
-# MAGIC # Prompt Template for query rewriting to allow converastion history to work - this will translate a query such as "how does it work?" after a question such as "what is spark?" to "how does spark work?".
-# MAGIC query_rewrite_template = """Based on the chat history below and the newest instruction, rewrite the rough draft of the copy. Focus on getting all of the context into the rough draft of the copy. Don't say "here is the rough draft" or any precluding messages or any notes about how you changed the output, just the displayed output. See example below:
-# MAGIC
-# MAGIC Chat history: 'Databricks is cool','Databricks is a cutting-edge platform that has transformed the big data landscape, providing a unified and user-friendly environment for data engineering, data science, and analytics, and enabling organizations to extract actionable insights and drive strategic decision-making.'
-# MAGIC Newest instruction on copy: provide more information on Gen AI capabilities
-# MAGIC revised rough draft: Databricks is a cutting-edge platform that has transformed the big data landscape, providing a unified and user-friendly environment for data engineering, data science, and analytics. With its innovative capabilities, Databricks enables organizations to extract actionable insights and drive strategic decision-making. Furthermore, Databricks is at the forefront of Generative AI (Gen AI) capabilities, empowering users to unlock new levels of productivity and innovation. By leveraging Gen AI, users can automate complex tasks, generate new insights, and create new data products, revolutionizing the way they work with data. With Databricks, organizations can harness the power of Gen AI to stay ahead of the curve and achieve their goals.
-# MAGIC
-# MAGIC
-# MAGIC Chat history: {formatted_chat_history}
-# MAGIC Newest instruction on copy: {question}
-# MAGIC revised rough draft:"""
-# MAGIC
-# MAGIC query_rewrite_prompt = PromptTemplate(
-# MAGIC     template=query_rewrite_template,
-# MAGIC     input_variables=["formatted_chat_history", "question"],
-# MAGIC )
 # MAGIC
 # MAGIC # # FM for generation
 # MAGIC model = ChatDatabricks(
@@ -145,20 +130,6 @@ model_config = mlflow.models.ModelConfig(development_config='chain_config.yaml')
 # MAGIC         "question": itemgetter("messages") | RunnableLambda(extract_user_query_string),
 # MAGIC         "chat_history": itemgetter("messages") | RunnableLambda(extract_chat_history),
 # MAGIC         "formatted_chat_history": itemgetter("messages") | RunnableLambda(format_chat_history_for_prompt),
-# MAGIC     }
-# MAGIC     | RunnablePassthrough()
-# MAGIC     | {
-# MAGIC         "question": RunnableBranch(  # Only re-write the question if there is a chat history
-# MAGIC             (
-# MAGIC                 lambda x: len(x["chat_history"]) > 0,
-# MAGIC                 {
-# MAGIC                     "formatted_chat_history": itemgetter("formatted_chat_history"),
-# MAGIC                     "question": itemgetter("question")
-# MAGIC                 } | query_rewrite_prompt | model | StrOutputParser(),
-# MAGIC             ),
-# MAGIC             itemgetter("question"),
-# MAGIC         ),
-# MAGIC          "formatted_chat_history": itemgetter("formatted_chat_history")
 # MAGIC     }
 # MAGIC     | prompt
 # MAGIC     | model
