@@ -25,7 +25,8 @@ The **feedback log** is a mechanism by which users can send back feedback on the
 Chatbot Feedback App
 
 1. Clone repo to git folder in workspace
-2. Run setup notebook to create secrets, feedback table, model serving endpoint with env vars
+2. Run Setup/brand_tone_chain and incorporate more specific prompting to your brand/tone (unless you already have that then just serve it in next step)
+2. Run Setup/setup notebook to create secrets, feedback table, model serving endpoint with env vars
 
 6. Go to your Databricks workspace and create a Databricks App  
 ![create-app](./imgs/create-app.png)
