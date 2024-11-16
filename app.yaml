@@ -10,13 +10,15 @@ env:
   - name: "SERVING_ENDPOINT"
     valueFrom: "serving_endpoint"
   - name: "DATABRICKS_WAREHOUSE_ID_VALUE"
-    valueFrom: "databricks-warehouse-id"
+    valueFrom: "warehouse_id"
   - name: DATABRICKS_TOKEN_VALUE
-    valueFrom: "personal-access-token"
+    valueFrom: "api_token"
   - name: FULL_DATABRICKS_HOST
-    valueFrom: "full-databricks-host"
+    valueFrom: "full_databricks_host"
+  - name: DATABRICKS_HOST
+    valueFrom: "databricks_host"
   - name: CHAT_LOG_TABLE
-    value: "maxf_demos.default.feedback_log"
+    valueFrom: "feedback_table"
   - name: LOG_METHOD
     value: dbsql
   # - name: SUPABASE_URL

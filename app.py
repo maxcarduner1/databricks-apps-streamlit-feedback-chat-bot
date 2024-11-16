@@ -8,6 +8,9 @@ from databricks.sdk.service.serving import ChatMessage, ChatMessageRole
 from dotenv import load_dotenv
 import dbsql
 from supabase import create_client, Client
+import requests
+import json
+
 
 load_dotenv()
 
@@ -65,8 +68,8 @@ if "visibility" not in st.session_state:
     st.session_state.visibility = "visible"
     st.session_state.disabled = False
 
-st.title("🧱 Chatbot App")
-st.write(f"A basic chatbot using the your own serving endpoint and allows users to log feedback on assistant responses.")
+st.title("🧱 Marketing and Tone Chatbot Feedback App")
+st.write(f"Welcome to your marketing and tone chatbot app! This chatbot is instructed to provide polished copy of rough drafts using all of our best practices and product names. Please try different types of content, the more diverse types of content we test the better we can holistically evaluate the tool. Thanks!")
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -78,26 +81,36 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # Accept user input
-if prompt := st.chat_input("What is up?"):
+if prompt := st.chat_input("Type rough draft copy here"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    messages = [ChatMessage(role=ChatMessageRole.SYSTEM, content="You are a helpful assistant."),
-                ChatMessage(role=ChatMessageRole.USER, content=prompt)]
-
-    # Display assistant response in chat message container
     # Query the Databricks serving endpoint
     try:
-        response = w.serving_endpoints.query(
-            name=os.getenv("SERVING_ENDPOINT"),
-            messages=messages,
-            max_tokens=400,
-        )
-        assistant_response = response.choices[0].message.content
+        databricks_host = os.getenv("DATABRICKS_HOST")
+        chain_endpoint = os.getenv("SERVING_ENDPOINT")
+        pat = os.getenv("DATABRICKS_TOKEN_VALUE")
 
+        url = f"https://{databricks_host}/serving-endpoints/{chain_endpoint}/invocations"
+        headers = {
+            "Authorization": f"Bearer {pat}",
+            "Content-Type": "application/json"
+        }
+
+        data = {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        }
+
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+        assistant_response = response.json()[0]
         # Display assistant response in chat message container
         with st.chat_message("assistant"):
             st.markdown(assistant_response)
