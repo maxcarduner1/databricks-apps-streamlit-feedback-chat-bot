@@ -1,6 +1,6 @@
 # Databricks notebook source
-# DBR 14.3 LTS ML
-%pip install langchain-core==0.2.5 langchain-community==0.2.4
+# DBR 14.3 LTS
+%pip install -r requirements.txt
 
 # COMMAND ----------
 
@@ -9,8 +9,9 @@
 
 # COMMAND ----------
 
-catalog = 'users'
-db = 'max_carduner'
+CATALOG = 'dbdemos'
+DB = 'maxcarduner'
+MODEL_NAME = "brand_tone_chain"
 
 # COMMAND ----------
 
@@ -25,7 +26,7 @@ chain_config = {
         "messages": [
             {"role": "user", "content": "Databricks is cool"},
             {"role": "assistant", "content": "Databricks is a cutting-edge platform that has transformed the big data landscape, providing a unified and user-friendly environment for data engineering, data science, and analytics, and enabling organizations to extract actionable insights and drive strategic decision-making."},
-            {"role": "user", "content": "Incorporate more information on Data Engineering capabilities"},
+            {"role": "user", "content": "Incorporate more information on lakehouse and how products differentiates from competitors"},
         ]
     },
     "llm_config": {
@@ -44,7 +45,7 @@ chain_config = {
         copy:
         final copy:
         
-        copy: {question}''',
+        copy: {copy}''',
         "llm_prompt_template_variables": ["copy"], 
     },
 }
@@ -100,7 +101,7 @@ model_config = mlflow.models.ModelConfig(development_config='chain_config.yaml')
 # MAGIC         # Note: This chain does not compress the history, so very long converastions can overflow the context window.
 # MAGIC         MessagesPlaceholder(variable_name="formatted_chat_history"),
 # MAGIC         # User's most current question
-# MAGIC         ("user", "{question}"),
+# MAGIC         ("user", "{copy}"),
 # MAGIC     ]
 # MAGIC )
 # MAGIC
@@ -118,7 +119,7 @@ model_config = mlflow.models.ModelConfig(development_config='chain_config.yaml')
 # MAGIC     return formatted_chat_history
 # MAGIC
 # MAGIC
-# MAGIC # # FM for generation
+# MAGIC # FM for generation
 # MAGIC model = ChatDatabricks(
 # MAGIC     endpoint=databricks_resources.get("llm_endpoint_name"),
 # MAGIC     extra_params=llm_config.get("llm_parameters"),
@@ -127,7 +128,7 @@ model_config = mlflow.models.ModelConfig(development_config='chain_config.yaml')
 # MAGIC # Chain with history
 # MAGIC chain = (
 # MAGIC     {
-# MAGIC         "question": itemgetter("messages") | RunnableLambda(extract_user_query_string),
+# MAGIC         "copy": itemgetter("messages") | RunnableLambda(extract_user_query_string),
 # MAGIC         "chat_history": itemgetter("messages") | RunnableLambda(extract_chat_history),
 # MAGIC         "formatted_chat_history": itemgetter("messages") | RunnableLambda(format_chat_history_for_prompt),
 # MAGIC     }
@@ -136,7 +137,7 @@ model_config = mlflow.models.ModelConfig(development_config='chain_config.yaml')
 # MAGIC     | StrOutputParser()
 # MAGIC )
 # MAGIC
-# MAGIC ## Tell MLflow logging where to find your chain.
+# MAGIC ## Tell MLflow logging where to find your chain (so that it can replicate to tracking server).
 # MAGIC mlflow.models.set_model(model=chain)
 
 # COMMAND ----------
@@ -149,7 +150,6 @@ with mlflow.start_run(run_name="brand_tone_bot"):
       model_config='chain_config.yaml',  # Chain configuration 
       artifact_path="chain",  # Required by MLflow
       input_example=model_config.get("input_example"),  # Save the chain's input schema.  MLflow will execute the chain before logging & capture it's output schema.
-      example_no_conversion=True,  # Required by MLflow to use the input_example as the chain's schema
       pip_requirements="requirements.txt",
       
   )
@@ -160,8 +160,7 @@ chain.invoke(model_config.get("input_example"))
 
 # COMMAND ----------
 
-MODEL_NAME = "brand_tone_chain"
-MODEL_NAME_FQN = f"{catalog}.{db}.{MODEL_NAME}"
+MODEL_NAME_FQN = f"{CATALOG}.{DB}.{MODEL_NAME}"
 # Register the chain to UC
 uc_registered_model_info = mlflow.register_model(model_uri=logged_chain_info.model_uri, name=MODEL_NAME_FQN)
 uc_registered_model_info
