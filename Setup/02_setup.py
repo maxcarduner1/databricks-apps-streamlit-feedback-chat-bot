@@ -38,6 +38,11 @@ w.secrets.put_secret(scope=secret_scope_name, key='api_token', string_value=data
 
 # COMMAND ----------
 
+for i in ['host_url', 'full_host_url', 'warehouse_id']:
+  print(i)
+
+# COMMAND ----------
+
 # from databricks.sdk import WorkspaceClient
 # w = WorkspaceClient()
 w.secrets.put_secret(scope=secret_scope_name, key='host_url', string_value=host_url)

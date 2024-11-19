@@ -14,9 +14,9 @@ env:
   - name: DATABRICKS_TOKEN_VALUE
     valueFrom: "api_token"
   - name: FULL_DATABRICKS_HOST
-    valueFrom: "full_databricks_host"
+    valueFrom: "full_host_url"
   - name: DATABRICKS_HOST
-    valueFrom: "databricks_host"
+    valueFrom: "host_url"
   - name: CHAT_LOG_TABLE
     valueFrom: "feedback_table"
   - name: LOG_METHOD

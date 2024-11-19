@@ -40,7 +40,7 @@ def handle_feedback(**response_dict):
         try:
             if os.getenv("LOG_METHOD") == "dbsql":
                 pat = os.getenv("DATABRICKS_TOKEN_VALUE")
-                databricks_host = os.getenv("FULL_DATABRICKS_HOST")
+                databricks_host = "https://"+os.getenv("DATABRICKS_HOST")
                 warehouse_id = os.getenv("DATABRICKS_WAREHOUSE_ID_VALUE")
                 table_name = os.getenv("CHAT_LOG_TABLE")
                 sql_statement = f"""INSERT INTO {table_name} VALUES ("{current_timestamp}", "{prompt.replace('"', "'")}", "{assistant_response.replace('"', "'")}", "{feedback['text'].replace('"', "'")}")"""
